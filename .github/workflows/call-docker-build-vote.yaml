@@ -81,33 +81,40 @@ jobs:
       ### defaults to false
       # comment-enable: false
 
-  # scan:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout source
-  #       uses: actions/checkout@v4
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
 
-  #     # - name: Log in to Docker
-  #     #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      # - name: Log in to Docker
+      #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-  #     # - name: Build Docker image
-  #     #   run: docker build -t myapp:${{ github.sha }} .
+      # - name: Build Docker image
+      #   run: docker build -t myapp:${{ github.sha }} .
 
-  #     - name: Install Sysdig Secure CLI
-  #       run: |
-  #         curl -sL https://download.sysdig.com/stable/install-sdc-cli.sh | bash
-  #         echo "export PATH=$PATH:$HOME/.local/bin" >> $GITHUB_ENV
+      - name: Install Sysdig Secure CLI
+        run: |
+          curl -sL https://download.sysdig.com/stable/install-sdc-cli.sh | bash
+          echo "export PATH=$PATH:$HOME/.local/bin" >> $GITHUB_ENV
 
-  #     - name: Scan image with Sysdig Secure
-  #       env:
-  #         SECURE_API_TOKEN: ${{ secrets.SYSDIG_SECURE_API_TOKEN }}
-  #         SECURE_ENDPOINT: ${{ secrets.SYSDIG_SECURE_ENDPOINT }}
-  #       run: |
-  #         sdc-cli scan \
-  #           --apiurl $SECURE_ENDPOINT \
-  #           --token $SECURE_API_TOKEN \
-  #           docker-daemon://myapp:${{ github.sha }}
+      - name: Scan image with Sysdig Secure
+        env:
+          SECURE_API_TOKEN: ${{ secrets.SYSDIG_SECURE_API_TOKEN }}
+          SECURE_ENDPOINT: ${{ secrets.SYSDIG_SECURE_ENDPOINT }}
+        run: |
+          # sdc-cli scan \
+          #   --apiurl $SECURE_ENDPOINT \
+          #   --token $SECURE_API_TOKEN \
+          #   docker-daemon://myapp:${{ github.sha }}
 
-  #     - name: Fail if vulnerabilities found
-  #       if: failure()
-  #       run: exit 1
+          #   --registry-auth $GHCR_USER:$GHCR_PASS \
+
+          sdc-cli scan \
+            --apiurl $SECURE_ENDPOINT \
+            --token $SECURE_API_TOKEN \
+            docker://ghcr.io/mawinkler/example-voting-app-vote@${{ steps.call-docker-build.outputs.digest }}
+
+      - name: Fail if vulnerabilities found
+        if: failure()
+        run: exit 1
