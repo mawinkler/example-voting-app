@@ -44,15 +44,15 @@ jobs:
       ### ENABLE ONE OR BOTH REGISTRIES
       ### tell docker where to push.
       ### NOTE if Docker Hub is set to true, you must set secrets above and also add account/repo/tags below
-      dockerhub-enable: true
+      dockerhub-enable: false
       ghcr-enable: true
 
       ### REQUIRED 
       ### A list of the account/repo names for docker build. List should match what's enabled above
       ### defaults to:
       image-names: |
-        ghcr.io/dockersamples/example-voting-app-result
-        dockersamples/examplevotingapp_result
+        ghcr.io/mawinkler/example-voting-app-result
+      # dockersamples/examplevotingapp_result
       
       ### REQUIRED set rules for tagging images, based on special action syntax:
       ### https://github.com/docker/metadata-action#tags-input
@@ -80,3 +80,29 @@ jobs:
       ### Create a PR comment with image tags and labels
       ### defaults to false
       # comment-enable: false
+
+  scan-from-registry:
+    runs-on: ubuntu-latest
+
+    steps:
+      # This step checks out a copy of your repository.
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Scan from registry
+        id: scan
+        uses: sysdiglabs/scan-action@v4
+        with:
+          # Tag of the image to analyse
+          image-tag: ghcr.io/mawinkler/example-voting-app-result:latest
+          # API token for Sysdig Scanning auth
+          sysdig-secure-token: ${{ secrets.SECURE_API_TOKEN }}
+          sysdig-secure-url: ${{ secrets.SECURE_ENDPOINT }}
+          stop-on-failed-policy-eval: true
+          stop-on-processing-error: true
+
+      - name: Upload SARIF file
+        if: success() || failure() # Upload results regardless previous step fails
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ github.workspace }}/sarif.json
