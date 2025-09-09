@@ -25,8 +25,9 @@ jobs:
           # format: sarif
           # output: results.sarif
 
-      - name: Upload SARIF file
-        if: success() || failure() # Upload results regardless previous step fails
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ${{ github.workspace }}/sarif.json
+      # IaC does not seem to gerate a SARIF file
+      # - name: Upload SARIF file
+      #   if: success() || failure() # Upload results regardless previous step fails
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: ${{ github.workspace }}/sarif.json

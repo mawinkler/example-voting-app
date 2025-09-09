@@ -91,7 +91,7 @@ jobs:
 
       - name: Scan from registry
         id: scan
-        uses: sysdiglabs/scan-action@v4
+        uses: sysdiglabs/scan-action@v5
         with:
           # Tag of the image to analyse
           image-tag: ghcr.io/mawinkler/example-voting-app-worker:latest
