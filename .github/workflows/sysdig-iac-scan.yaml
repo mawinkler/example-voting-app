@@ -16,13 +16,14 @@ jobs:
         uses: sysdiglabs/scan-action@v4
         with:
           # Scan Infrastructure-as-Code files (Kubernetes YAML, Terraform, Helm charts)
-          iac: true
+          mode: iac
           # Path to IaC manifests inside your Voting App repo
-          iac-dir: ./k8s-manifests
+          iac-scan-path: ./k8s-manifests
           sysdig-secure-token: ${{ secrets.SECURE_API_TOKEN }}
           sysdig-secure-url: ${{ secrets.SECURE_ENDPOINT }}
-          format: sarif
-          output: results.sarif
+          cli-scanner-version: 1.9.0
+          # format: sarif
+          # output: results.sarif
 
       - name: Upload SARIF file
         if: success() || failure() # Upload results regardless previous step fails
