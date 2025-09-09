@@ -97,6 +97,7 @@ jobs:
           image-tag: ghcr.io/mawinkler/example-voting-app-vote:latest
           # API token for Sysdig Scanning auth
           sysdig-secure-token: ${{ secrets.SECURE_API_TOKEN }}
+          sysdig-secure-url: ${{ secrets.SECURE_ENDPOINT }}
           stop-on-failed-policy-eval: true
           stop-on-processing-error: true
 
